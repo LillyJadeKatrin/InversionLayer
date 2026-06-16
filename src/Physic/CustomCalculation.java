@@ -10,7 +10,7 @@ class CustomCalculation implements Calculation {
             if (step.condition.value) {
                 step.input.Read(input, step_input);
                 step.calculation.Calculate(step_input, step_output);
-                step.output.Write(output, step_output);
+                step.output.Write(step_output, output);
             }
         }
     }

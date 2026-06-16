@@ -1,5 +1,5 @@
 package Physic;
 
 public interface Calculation {
-    void Calculate(Attribute input, Attribute output);
+    Attribute Calculate(Attribute input);
 }
