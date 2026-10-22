@@ -1,0 +1,70 @@
+Interim version of Attribute where properties are indexed by integer instead of string, just for safekeeping.
+
+public object Attribute {
+private:
+  ArrayList<ArrayList<Object>> value;
+
+  String type;
+  String id;
+  ArrayList<String> keys;
+  HashMap<String, int> indexes;
+
+public:
+  //construct
+  //destruct
+  Object Get(ArrayList<int> index) {
+    if (index.length() == 0)
+      return this;
+    if (index.length() % 2 == 1 || 
+        value.length() <= index[0] ||
+        value[index[0].length() <= index[1]) {
+      // log
+      // these may be separate logs
+      return null;
+    }
+    Object item = value[index[0]][index[1]];
+    if (index.length() > 2) {
+      if (item instanceOf Attribute)
+        return item.Get(index.sublist(2, index.length());
+    // log
+    }
+    return item;
+  }
+
+  void Set(ArrayList<int> index, Object new_value) {
+    if (index.length() < 2) {
+      // log
+      return;
+    }
+    if (value.length() <= index[0]) {
+      if (keys.length() > 0)
+        // log
+      value.resize(index[0]);
+    }
+    if (value[index[0].length() <= index[1])
+      value[index[0]].resize(index[1]);
+    if (index.length() > 2)
+      item.Set(index.sublist(2, index.length(), new_value);
+    // consider logging if Attribute replaced by nonAttribute
+    // destroy value[index[0]][index[1]];
+    value[index[0]][index[1]] = new_value;
+  }
+
+  int GetSize(ArrayList<int> index) {
+    if (index.length() % 2 != 1 || 
+        value.length() <= index[0]) {
+      // log
+      // these may be separate logs
+      return 0;
+    }
+    int len = value[index[0]].length();
+    if (index.length() == 1)
+      len;
+    if (len < index[1] ||
+      !value[index[0]][index[1]] instanceOf Attribute) {
+      // log
+      return 0;
+    }
+    return value[index[0]][index[1]].GetSize(index.sublist(2, index.length());
+  }
+}
