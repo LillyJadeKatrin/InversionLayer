@@ -1,7 +1,7 @@
 package Physic;
 
 class Operation {
-  BoolAttribute condition;
+  ArrayList<Index> condition;
   Address input;
   Address output;
   Calculation calculation;

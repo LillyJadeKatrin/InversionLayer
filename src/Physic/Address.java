@@ -38,7 +38,7 @@ public:
           value.nest.Translate(input.Get(value.start), output.Get(key));
         }
       } else { // if count != 1
-        int prop_size = input.GetSize(value.start);
+        int prop_size = input.Describe(value.start);
         org_offset = value.start(value.start.length() - 1).offset;
         if (prop_size <= org_offset) {
           // log
@@ -57,9 +57,9 @@ public:
         ArrayList<Index> dest_itr = new ArrayList<Index>(key);
         for (int ix = 0; ix < max_count; ix++) {
           if (value.nest == null) {
-            output.Set(key, input.Get(value.start));
+            output.Set(dest_itr, input.Get(org_itr));
           } else {
-            value.nest.Translate(input.Get(value.start), output.Get(key));
+            value.nest.Translate(input.Get(org_itr), output.Get(dest_itr));
           }
           org_itr[org_itr.length() - 1].offset += org_inc;
           dest_itr[dest_itr.length() - 1].offset += dest_inc;

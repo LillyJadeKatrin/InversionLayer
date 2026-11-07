@@ -6,30 +6,47 @@ private:
 public:
   //construct
   //destruct
-  Object Get(ArrayList<Index> path) {
+  Object Get(ArrayList<Index> path, bool array) {
     int plen = path.length();
     if (plen == 0)
       return this;
-    String prop = path[0].prop;
-    int offset = path[0].offset;
-    if (!value.contains(prop)) {
-      // log
-      // property not found in attribute
-      return null;
-    }
-    if (value.get(prop).length() <= offset) {
-      // log
-      // index within property array not found
-      return null;
-    }
-    Object item = value.get(prop).[offset];
+    if (plen == 1)
+      return array ? Get(path[0].prop) : Get(path[0]);
+    Object item = Get(path[0]);
     if (item instanceOf Attribute)
-      return item.Get(path.sublist(1, plen);
+      return item.Get(path.sublist(1, plen), array);
     if (plen > 1) {
       // log
       // attempt to get property of non-attribute object
     }
     return item;
+  }
+
+  Object Get(ArrayList<Index> path) {
+    return Get(path, false);
+  }
+
+  ArrayList<Object> Get(String prop) {
+    if (!value.contains(prop)) {
+      // log
+      // property not found in attribute
+      return new ArrayList<Object>(0);
+    }
+    return value.get(prop)
+  }
+
+  Object Get(Index index) {
+    return Get(index.prop, index.offset);
+  }
+
+  Object Get(String prop, int offset) {
+    ArrayList<Object> property = Get(prop);
+    if (property.length() <= offset) {
+      // log
+      // index within property array not found
+      return null;
+    }
+    return property.[offset];
   }
 
   void Set(ArrayList<Index> path, Object new_value) {
@@ -68,20 +85,24 @@ public:
     item.Set(path.sublist(1, plen), new_value);
   }
 
-  int GetSize(ArrayList<Index> path) {
-    int plen = path.length();
-    if (plen == 0) {
-      // log
-      // should have gotten this one level up, entities don't have direct insight into sibling data
-      return 0;
-    }
-    if (plen == 1)
-      return value.get(path[0].prop).length();
-    Object item = Get(path.sublist(0, plen - 1));
-    if (item instanceOf Attribute)
-      return item.GetSize(path.sublist(plen - 1, plen);
-    // log
-    // can't get prop size if this isn't an attribute
-    return 0;
+  void Set(String prop,
+           int offset,
+           Object new_value) {
+    Set(Index.Str2Path(prop, offset), new_value);
+  }
+
+  HashMap<String, int> Describe() {
+    return value.stream().map(ArrayList::length)
+      .collect(Collectors.toCollection(HashMap<String, int>::new));
+  }
+
+  int Describe(String prop) {
+    if (!value.contains(prop))
+      return -1;
+    return value.get(prop).length();
+  }
+
+  int Describe(ArrayList<Index> path) {
+    return Get(path, true).length();
   }
 }
