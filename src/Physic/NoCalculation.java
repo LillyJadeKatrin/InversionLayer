@@ -1,6 +1,6 @@
 package Physic;
 
-class NoopCalculation implements Calculation {
+class NoCalculation implements Calculation {
 public:
   void Calculate(Attribute input,
                  Attribute output) {

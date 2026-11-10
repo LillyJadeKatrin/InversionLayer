@@ -14,7 +14,8 @@ private:
 public:
   // construct
   // destruct
-  void Translate(Attribute input, Attribute output) {
+  void Translate(Attribute input,
+                 Attribute output) {
     var_map.forEach((key, value) -> {
       if (const_map.contains(key)) {
         // log

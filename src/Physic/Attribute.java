@@ -3,6 +3,36 @@ package Physic;
 public object Attribute {
 private:
   HashMap<String, ArrayList<Object>> value;
+  HashMap<String, Calculation> calculations;
+
+  Calculation CalcLookup(ArrayList<Index> calcpath) {
+    int clen = calcpath.length();
+    if (clen == 0) {
+      // log
+      // no calcname, assuming noop but you should really provide this
+      return Global.CalcLookup("No");
+    }
+    if (clen == 1)
+      return CalcLookup(calcpath[0].prop);
+    if (clen > 1)
+      return Get(calcpath.sublist(0, clen - 1)).CalcLookup(calcpath[clen - 1].prop);
+  }
+
+  Calculation CalcLookup(String calcname) {
+    if (calculations.contains(calcname))
+      return calculations.get(calcname);
+    return Global.CalcLookup(calcname);
+  }
+
+  static Attribute Combine(String lname,
+                           Attribute left,
+                           String rname,
+                           Attribute right) {
+    Attribute new_att;
+    new_att.Set(lname, 0, left);
+    new_att.Set(rname, 0, right);
+    return new_att;
+  }
 public:
   //construct
   //destruct
@@ -88,7 +118,7 @@ public:
   void Set(String prop,
            int offset,
            Object new_value) {
-    Set(Index.Str2Path(prop, offset), new_value);
+    Set(Index.Str2Index(prop, offset), new_value);
   }
 
   HashMap<String, int> Describe() {
@@ -104,5 +134,37 @@ public:
 
   int Describe(ArrayList<Index> path) {
     return Get(path, true).length();
+  }
+
+  void Act(Calculation calc,
+           Attribute input,
+           Attribute output) {
+    Attribute in = Combine("input", input,
+                           "this", this);
+    Attribute out = Combine("output", output,
+                            "this", this);
+    calc.Calculate(in, out);
+  }
+
+  void Act(Calculation calc,
+           ArrayList<Attribute> input,
+           ArrayList<Attribute> output) {
+    Attribute out;
+    for (int ix = 0; ix < input.length(); ix++) {
+      Act(calc, input[ix], out);
+      output[ix] = out;
+    }
+  }
+
+  void Act(ArrayList<Index> calcname,
+           Attribute input,
+           Attribute output) {
+    Act(CalcLookup(calcname), input, output);
+  }
+
+  void Act(ArrayList<Index> calcname,
+           ArrayList<Attribute> input,
+           ArrayList<Attribute> output) {
+    Act(CalcLookup(calcname), input, output);
   }
 }
