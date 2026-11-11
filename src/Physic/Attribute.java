@@ -3,26 +3,6 @@ package Physic;
 public object Attribute {
 private:
   HashMap<String, ArrayList<Object>> value;
-  HashMap<String, Calculation> calculations;
-
-  Calculation CalcLookup(ArrayList<Index> calcpath) {
-    int clen = calcpath.length();
-    if (clen == 0) {
-      // log
-      // no calcname, assuming noop but you should really provide this
-      return Global.CalcLookup("No");
-    }
-    if (clen == 1)
-      return CalcLookup(calcpath[0].prop);
-    if (clen > 1)
-      return Get(calcpath.sublist(0, clen - 1)).CalcLookup(calcpath[clen - 1].prop);
-  }
-
-  Calculation CalcLookup(String calcname) {
-    if (calculations.contains(calcname))
-      return calculations.get(calcname);
-    return Global.CalcLookup(calcname);
-  }
 
   static Attribute Combine(String lname,
                            Attribute left,
@@ -136,9 +116,15 @@ public:
     return Get(path, true).length();
   }
 
-  void Act(Calculation calc,
+  void Act(String calcname,
            Attribute input,
            Attribute output) {
+    Calculation calc = Global.CalcLookup(calcname);
+    if (calc == null) {
+      // log
+      // global CalcLookup should handle this but better safe than sorry
+      calc = new NoCalculation();
+    }
     Attribute in = Combine("input", input,
                            "this", this);
     Attribute out = Combine("output", output,
@@ -146,25 +132,37 @@ public:
     calc.Calculate(in, out);
   }
 
-  void Act(Calculation calc,
+  void Act(String calcname,
            ArrayList<Attribute> input,
            ArrayList<Attribute> output) {
     Attribute out;
     for (int ix = 0; ix < input.length(); ix++) {
-      Act(calc, input[ix], out);
+      Act(calcname, input[ix], out);
       output[ix] = out;
     }
   }
 
-  void Act(ArrayList<Index> calcname,
+  void Act(ArrayList<Index> calcpath,
            Attribute input,
            Attribute output) {
-    Act(CalcLookup(calcname), input, output);
+    Object calcname = Get(calcpath);
+    if (!(calcname instanceOf String)) {
+      // log
+      // not a valid calculation name
+      return;
+    }
+    Act(Get(calcpath), input, output);
   }
 
-  void Act(ArrayList<Index> calcname,
+  void Act(ArrayList<Index> calcpath,
            ArrayList<Attribute> input,
            ArrayList<Attribute> output) {
-    Act(CalcLookup(calcname), input, output);
+    Object calcname = Get(calcpath);
+    if (!(calcname instanceOf String)) {
+      // log
+      // not a valid calculation name
+      return;
+    }
+    Act(Get(calcpath), input, output);
   }
 }
